@@ -18,20 +18,24 @@ class Broker extends UnicastRemoteObject implements MQSrv  {
 
     private ArrayList<Client> clients;
     private HashMap<String, Queue> queues;
+    private HashMap<Client, Integer> pending;
 
     public Broker() throws RemoteException {
         super();
         clients = new ArrayList<>();
         queues = new HashMap<>();
+        pending = new HashMap<>();
     }
     public int getVersion() throws RemoteException {
         return MQSrv.version;
     }
     public synchronized void addClient(Client cl) throws RemoteException {
         clients.add(cl);
+        pending.put(cl, 0);
     }
     public synchronized void removeClient(Client cl) throws RemoteException {
         clients.remove(cl);
+        pending.remove(cl);
     }
     public Collection <Client> clientList() throws RemoteException {
         return new ArrayList<>(clients);
@@ -40,6 +44,7 @@ class Broker extends UnicastRemoteObject implements MQSrv  {
         for (Client c : clients) {
             try {
                 c.deliver(null, m);
+                incPending(c);
             } catch (RemoteException e) {
                 // Ignore delivery errors for this basic phase
             }
@@ -61,9 +66,16 @@ class Broker extends UnicastRemoteObject implements MQSrv  {
         return new ArrayList<>(queues.values());
     }
     public Map <Client, Integer> clientsQueueLength() throws RemoteException {
-        return null;
+        return pending;
     }
     public synchronized void ack(Client cl) throws RemoteException {
+        Integer v = pending.get(cl);
+        if (v != null && v > 0)
+            pending.put(cl, v - 1);
+    }
+
+    synchronized void incPending(Client cl) {
+        pending.put(cl, pending.getOrDefault(cl, 0) + 1);
     }
     static public void main (String args[])  {
         if (args.length!=1) {
