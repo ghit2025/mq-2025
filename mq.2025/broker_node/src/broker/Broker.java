@@ -34,6 +34,13 @@ class Broker extends UnicastRemoteObject implements MQSrv  {
         return new ArrayList<>(clients);
     }
     public synchronized void broadcast(byte[] m) throws RemoteException {
+        for (Client c : clients) {
+            try {
+                c.deliver(null, m);
+            } catch (RemoteException e) {
+                // Ignore delivery errors for this basic phase
+            }
+        }
     }
     public synchronized Queue createQueue(String name, QueueType qc) throws RemoteException {
         return null;
