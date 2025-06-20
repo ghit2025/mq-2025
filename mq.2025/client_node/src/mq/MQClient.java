@@ -18,19 +18,24 @@ public class MQClient extends UnicastRemoteObject implements Client  {
     public static final long serialVersionUID=1234567890L;
 
     private String name;
+    private java.util.LinkedList<Message> messages;
 
     // constructor
     public MQClient(String name) throws RemoteException {
         super();
         this.name = name;
+        this.messages = new java.util.LinkedList<>();
     }
     public String getName() throws RemoteException {
         return name;
     }
     public synchronized void deliver(String queue, byte[] m) throws RemoteException {
+        messages.add(new Message(queue, m));
     }
     public synchronized Message poll() {
-        return null;
+        if (messages.isEmpty())
+            return null;
+        return messages.removeFirst();
     }
     public MQSrv MQconnect(String host, String port) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(host, Integer.parseInt(port));
