@@ -28,12 +28,14 @@ class QueueImpl extends UnicastRemoteObject implements Queue  {
     public QueueType getQueueType() throws RemoteException {
         return qtype;
     }
-    public void bind(Client cl) throws RemoteException {
+    public synchronized void bind(Client cl) throws RemoteException {
+        clients.add(cl);
     }
-    public void unbind(Client cl) throws RemoteException {
+    public synchronized void unbind(Client cl) throws RemoteException {
+        clients.remove(cl);
     }
-    public Collection <Client> clientList() throws RemoteException {
-        return null;
+    public synchronized Collection <Client> clientList() throws RemoteException {
+        return new java.util.ArrayList<>(clients);
     }
     public void send(byte[] m) throws RemoteException {
     }
