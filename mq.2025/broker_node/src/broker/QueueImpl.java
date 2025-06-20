@@ -37,6 +37,15 @@ class QueueImpl extends UnicastRemoteObject implements Queue  {
     public synchronized Collection <Client> clientList() throws RemoteException {
         return new java.util.ArrayList<>(clients);
     }
-    public void send(byte[] m) throws RemoteException {
+    public synchronized void send(byte[] m) throws RemoteException {
+        if (qtype == QueueType.PUBSUB) {
+            for (Client c : clients) {
+                try {
+                    c.deliver(name, m);
+                } catch (RemoteException e) {
+                    // Ignore delivery errors at this stage
+                }
+            }
+        }
     }
 }
