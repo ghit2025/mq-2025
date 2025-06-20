@@ -42,6 +42,7 @@ class QueueImpl extends UnicastRemoteObject implements Queue  {
             for (Client c : clients) {
                 try {
                     c.deliver(name, m);
+                    broker.incPending(c);
                 } catch (RemoteException e) {
                     // Ignore delivery errors at this stage
                 }
