@@ -17,7 +17,7 @@ class Broker extends UnicastRemoteObject implements MQSrv  {
     public Broker() throws RemoteException {
     }
     public int getVersion() throws RemoteException {
-        return 0;
+        return MQSrv.version;
     }
     public synchronized void addClient(Client cl) throws RemoteException {
     }
