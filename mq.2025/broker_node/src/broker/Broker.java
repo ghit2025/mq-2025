@@ -43,7 +43,7 @@ class Broker extends UnicastRemoteObject implements MQSrv  {
         }
     }
     public synchronized Queue createQueue(String name, QueueType qc) throws RemoteException {
-        return null;
+        return new QueueImpl(this, name, qc);
     }
     public Collection <Queue> queueList() throws RemoteException {
         return null;
