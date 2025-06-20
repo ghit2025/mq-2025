@@ -11,15 +11,18 @@ import mqprot.Client;
 import java.util.Collection;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 class Broker extends UnicastRemoteObject implements MQSrv  {
     public static final long serialVersionUID=1234567890L;
 
     private ArrayList<Client> clients;
+    private HashMap<String, Queue> queues;
 
     public Broker() throws RemoteException {
         super();
         clients = new ArrayList<>();
+        queues = new HashMap<>();
     }
     public int getVersion() throws RemoteException {
         return MQSrv.version;
@@ -43,10 +46,19 @@ class Broker extends UnicastRemoteObject implements MQSrv  {
         }
     }
     public synchronized Queue createQueue(String name, QueueType qc) throws RemoteException {
-        return new QueueImpl(this, name, qc);
+        Queue q = queues.get(name);
+        if (q != null) {
+            // if existing queue has a different type, error
+            if (!q.getQueueType().equals(qc))
+                return null;
+            return q;
+        }
+        q = new QueueImpl(this, name, qc);
+        queues.put(name, q);
+        return q;
     }
     public Collection <Queue> queueList() throws RemoteException {
-        return null;
+        return new ArrayList<>(queues.values());
     }
     public Map <Client, Integer> clientsQueueLength() throws RemoteException {
         return null;
