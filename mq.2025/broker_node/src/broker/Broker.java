@@ -10,21 +10,28 @@ import mqprot.QueueType;
 import mqprot.Client;
 import java.util.Collection;
 import java.util.Map;
+import java.util.ArrayList;
 
 class Broker extends UnicastRemoteObject implements MQSrv  {
     public static final long serialVersionUID=1234567890L;
 
+    private ArrayList<Client> clients;
+
     public Broker() throws RemoteException {
+        super();
+        clients = new ArrayList<>();
     }
     public int getVersion() throws RemoteException {
         return MQSrv.version;
     }
     public synchronized void addClient(Client cl) throws RemoteException {
+        clients.add(cl);
     }
     public synchronized void removeClient(Client cl) throws RemoteException {
+        clients.remove(cl);
     }
     public Collection <Client> clientList() throws RemoteException {
-        return null;
+        return new ArrayList<>(clients);
     }
     public synchronized void broadcast(byte[] m) throws RemoteException {
     }
