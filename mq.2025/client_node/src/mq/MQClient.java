@@ -29,7 +29,8 @@ public class MQClient extends UnicastRemoteObject implements Client  {
         return null;
     }
     public MQSrv MQconnect(String host, String port) throws RemoteException, NotBoundException {
-        return null;
+        Registry registry = LocateRegistry.getRegistry(host, Integer.parseInt(port));
+        return (MQSrv) registry.lookup("MQ");
     }
     // función que serializa un objeto en un array de bytes
     public byte [] serializeMessage(Object o) throws IOException {
