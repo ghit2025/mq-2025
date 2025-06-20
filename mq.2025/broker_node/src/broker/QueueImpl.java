@@ -11,13 +11,22 @@ import mqprot.Client;
 
 class QueueImpl extends UnicastRemoteObject implements Queue  {
     public static final long serialVersionUID=1234567890L;
+    private Broker broker;
+    private String name;
+    private QueueType qtype;
+    private java.util.ArrayList<Client> clients;
     public QueueImpl(Broker b, String qname, QueueType qtype) throws RemoteException {
+        super();
+        broker = b;
+        name = qname;
+        this.qtype = qtype;
+        clients = new java.util.ArrayList<>();
     }
     public String getName() throws RemoteException {
-        return null;
+        return name;
     }
     public QueueType getQueueType() throws RemoteException {
-        return null;
+        return qtype;
     }
     public void bind(Client cl) throws RemoteException {
     }
