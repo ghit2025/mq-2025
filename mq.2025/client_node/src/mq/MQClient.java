@@ -17,11 +17,15 @@ import mqprot.Queue;
 public class MQClient extends UnicastRemoteObject implements Client  {
     public static final long serialVersionUID=1234567890L;
 
+    private String name;
+
     // constructor
     public MQClient(String name) throws RemoteException {
+        super();
+        this.name = name;
     }
     public String getName() throws RemoteException {
-        return null;
+        return name;
     }
     public synchronized void deliver(String queue, byte[] m) throws RemoteException {
     }
