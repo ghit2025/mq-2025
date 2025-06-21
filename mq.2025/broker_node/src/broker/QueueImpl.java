@@ -47,6 +47,25 @@ class QueueImpl extends UnicastRemoteObject implements Queue  {
                     // Ignore delivery errors at this stage
                 }
             }
+        } else if (qtype == QueueType.PRODCONS) {
+            Client best = null;
+            int bestPending = Integer.MAX_VALUE;
+            java.util.Map<Client, Integer> map = broker.clientsQueueLength();
+            for (Client c : clients) {
+                int pend = map.getOrDefault(c, 0);
+                if (best == null || pend < bestPending) {
+                    best = c;
+                    bestPending = pend;
+                }
+            }
+            if (best != null) {
+                try {
+                    best.deliver(name, m);
+                    broker.incPending(best);
+                } catch (RemoteException e) {
+                    // Ignore delivery errors at this stage
+                }
+            }
         }
     }
 }
